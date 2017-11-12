@@ -19,11 +19,17 @@ class Node:
     def __eq__(self, other):
         return self.ID == other.ID
 
-    def getMethod(self):
+    def get_method(self):
         return self.ID.getMethod()
 
-    def getInstruction(self):
+    def get_label(self):
+        return self.label
+
+    def get_instruction(self):
         return self.label[0]
 
-    def addSuccs(self, other):
+    def get_ID(self):
+        return self.ID
+
+    def add_succs(self, other):
         self.succs.append(other)

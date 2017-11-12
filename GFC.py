@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import Node
+import NodeID
 
 
 # Un graphe est tout simplement une liste de noeuds.
@@ -25,17 +26,23 @@ class GFC:
         # Construisons maintenant la liste des successeurs de chaque noeud
         for i in range(len(self.nodes)):
 
-            if self.nodes[i].getInstruction != "ret" and self.nodes[i].getInstruction != "throw":
-                self.nodes[i].addSuccs()
+            if self.nodes[i].get_instruction() != "ret" and self.nodes[i].get_instruction() != "throw":
+                self.nodes[i].add_succs(self.nodes[i + 1])
+
+            temp = find_IL(self.nodes[i].get_label())
+            if temp is not None:
+                self.nodes[i].add_succs(self.find_node(NodeID.NodeID(self.nodes[i].get_method(), temp)))
+
+            #if self.nodes[i].get_instruction == "call" or "callvirt" or "newobj":
 
     def add_node(self, node):
         self.nodes.append(node)
 
-    def __str__(self):
-        to_print = []
+    def find_node(self, ID):
         for node in self.nodes:
-            to_print.append(str(node.ID.getMethod()) + ' ' + str(node.ID.getIndex()) + ' ' + node.label)
-        return '\n'.join(to_print)
+            if ID == node.get_ID():
+                return node
+        return None
 
 
 def unindent(my_string):
@@ -53,6 +60,7 @@ def find_IL(label):
 
 
 g = GFC("test.cil")
+
 
 
 
