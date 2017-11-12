@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 # Une classe pour décrire l'identifiant d'un noeud.
-# Pour l'instant, un identifiant contient le numéro de la méthode 50 si c'est la première méthode du bytecode,
-# 1 si c'est la deuxième, etc.), et le numéro de ligne relatif (l'index) (dans le bytecode, le num de ligne ressemble à
-# IL_0001, IL00b4 etc.)
+# Pour l'instant, un identifiant contient le nom de la méthode (la ligne venant juste après le .method), et le numéro
+# de ligne relatif (l'index) (dans le bytecode, le num de ligne ressemble à IL_0001, IL00b4 etc.)
 
 class NodeID:
 

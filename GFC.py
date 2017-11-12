@@ -2,30 +2,34 @@
 
 import Node
 
+
 # Un graphe est tout simplement une liste de noeuds.
 class GFC:
 
     # Un constructeur pour construire un GFC à partir d'un fichier texte de CIL
     def __init__(self, file_name):
 
+        # Construisons dans un premier temps la liste de noeuds sans s'intéresser aux successeurs
         self.nodes = []
-        self._method_counter = -1  #Un compteur qui va nous servir à compter les méthodes dans un fichier de CIL
-                                   # afin de pouvoir construire l'ID des différents noeuds
+
         file = open(file_name, "r")
 
         line = "\n"
         while line != "":
-            line = unindent(file.readline())  #On lit une ligne et on vire les tabulations présentes en début de ligne
-            if line[:7] == ".method":   #Si on rencontre ue nouvelle méthode, on incrémente le compteur
-                self._method_counter += 1
-            if line[:2] == "IL":   #Si la ligne contient une instruction, on la stocke dans un noeud
-                self.add_node(Node.Node(line, self._method_counter))
+            line = unindent(file.readline())
+            if line[:7] == ".method":     # Si on rencontre une nouvelle méthode, on enregistre le nom qui se trouve
+                method = file.readline()  # dans la ligne suivante
+            if line[:2] == "IL":   # Si la ligne contient une instruction, on la stocke dans un noeud
+                self.add_node(Node.Node(line, method))
 
+        # Construisons maintenant la liste des successeurs de chaque noeud
+        for i in range(len(self.nodes)):
 
+            if self.nodes[i].getInstruction != "ret" and self.nodes[i].getInstruction != "throw":
+                self.nodes[i].addSuccs()
 
     def add_node(self, node):
         self.nodes.append(node)
-
 
     def __str__(self):
         to_print = []
@@ -34,13 +38,21 @@ class GFC:
         return '\n'.join(to_print)
 
 
-
-
 def unindent(my_string):
     if my_string != "":
         while my_string[0] == ' ' or my_string[0] == '\t':
             my_string = my_string[1:]
     return my_string
+
+
+def find_IL(label):
+    for word in label:
+        if word[:2] == "IL":
+            return int(word[3:7], 16)
+    return None
+
+
+g = GFC("test.cil")
 
 
 

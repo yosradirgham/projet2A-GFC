@@ -2,8 +2,8 @@
 
 import NodeID
 
-# Un noeud du graphe contient un identifiant (ID), un label (le nom de l'instruction et les arguments), et la liste
-# de ses successeurs (qui sont eux-mêmes des noeuds)
+# Un noeud du graphe contient un identifiant (ID), un label (le nom de l'instruction et les arguments stockés dans une
+# liste), et la liste de ses successeurs (qui sont eux-mêmes des noeuds)
 
 class Node:
 
@@ -12,12 +12,18 @@ class Node:
     def __init__(self, cil_line, method):
         index = int(cil_line[3:7], 16)  #On extrait le num de ligne écrit en base 16
         self.ID = NodeID.NodeID(method, index)   #On construit l'ID avec l'index et le numéro de la méthode
-        self.label = cil_line[10:-1]   #On extrait le nom de l'instruction et les arguments
+        self.label = cil_line[10:-1].split(' ')   #On extrait le nom de l'instruction et les arguments
         self.succs = []
 
     # Deux noeuds sont égaux ssi ils ont le même identifiant.
     def __eq__(self, other):
         return self.ID == other.ID
+
+    def getMethod(self):
+        return self.ID.getMethod()
+
+    def getInstruction(self):
+        return self.label[0]
 
     def addSuccs(self, other):
         self.succs.append(other)
