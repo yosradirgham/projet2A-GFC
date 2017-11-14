@@ -19,7 +19,7 @@ class GFC:
         while line != "":
             line = unindent(file.readline())
             if line[:7] == ".method":     # Si on rencontre une nouvelle méthode, on enregistre le nom qui se trouve
-                method = file.readline()  # dans la ligne suivante
+                method = unindent(file.readline()[:-1])  # dans la ligne suivante
             if line[:2] == "IL":   # Si la ligne contient une instruction, on la stocke dans un noeud
                 self.add_node(Node.Node(line, method))
 
@@ -38,12 +38,24 @@ class GFC:
     def add_node(self, node):
         self.nodes.append(node)
 
+    # Prend un ID et retourne le noeud de nodes_list correspondant.
     def find_node(self, ID):
         for node in self.nodes:
             if ID == node.get_ID():
                 return node
         return None
 
+    def export(self, filename):
+        fichier = open(filename, "w")
+        fichier.write("digraph GFC {\n")
+        for node in self.nodes:
+            fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\""
+                          + "[label=\"" + node.label[0] + "\"];\n")
+            for suc in node.succs:
+                fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\""
+                              + " -> "
+                              + "\"" + suc.ID.getMethod() + str(suc.ID.getIndex()) + "\";\n")
+        fichier.write("}\n")
 
 def unindent(my_string):
     if my_string != "":
@@ -60,7 +72,7 @@ def find_IL(label):
 
 
 g = GFC("test.cil")
-
+g.export("graphe.dot")
 
 
 
