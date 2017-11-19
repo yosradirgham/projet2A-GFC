@@ -33,7 +33,7 @@ class GFC:
             if temp is not None:
                 self.nodes[i].add_succs(self.find_node(NodeID.NodeID(self.nodes[i].get_method(), temp)))
 
-            #if self.nodes[i].get_instruction == "call" or "callvirt" or "newobj":
+            # if self.nodes[i].get_instruction == "call" or "callvirt" or "newobj":
 
     def add_node(self, node):
         self.nodes.append(node)
@@ -51,11 +51,16 @@ class GFC:
         for node in self.nodes:
             fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\""
                           + "[label=\"" + node.label[0] + "\"];\n")
-            for suc in node.succs:
-                fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\""
-                              + " -> "
-                              + "\"" + suc.ID.getMethod() + str(suc.ID.getIndex()) + "\";\n")
+            for i in range(len(node.succs)):
+                fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\"" + " -> " + "\""
+                              + node.succs[i].ID.getMethod() + str(node.succs[i].ID.getIndex()) + "\"[label="
+                              + str(i) + "];\n")
+            # for suc in node.succs:
+            #     fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\""
+            #                   + " -> "
+            #                   + "\"" + suc.ID.getMethod() + str(suc.ID.getIndex()) + "\";\n")
         fichier.write("}\n")
+
 
 def unindent(my_string):
     if my_string != "":
