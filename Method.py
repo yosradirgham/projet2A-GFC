@@ -26,13 +26,22 @@ class Method:
     @classmethod
     def declaration_to_method(cls, string):
         words = re.split('\W+', string)
-        if words[0] == "instance":
-            words.pop(0)
-        return_type = words[1]
-        name = words[2]
+        if words[1] == "instance":
+            words.pop(1)
+        return_type = words[2]
+        name = words[3]
         arg_types = []
-        for i in range(3, len(words) - 4, 2):
+        for i in range(4, len(words) - 4, 2):
             arg_types.append(words[i])
         return cls(return_type, name, arg_types)
 
-
+    @classmethod
+    def label_to_method(cls, label):
+        if label[1] == "instance":
+            label.pop(1)    # Enlever le 'instance'
+        return_type = label[1]
+        name = label[4]
+        arg_types = []
+        for i in range(5, len(label) - 1):
+            arg_types.append(label[i])
+        return cls(return_type, name, arg_types)

@@ -13,6 +13,7 @@ class GFC:
 
         # Construisons dans un premier temps la liste de noeuds sans s'intéresser aux successeurs
         self.nodes = []
+        self.methods = []
 
         file = open(file_name, "r")
 
@@ -21,6 +22,7 @@ class GFC:
             line = unindent(file.readline())
             if line[:7] == ".method":     # Si on rencontre une nouvelle méthode, on enregistre le nom qui se trouve
                 method = Method.Method.declaration_to_method(file.readline())  # dans la ligne suivante
+                self.methods.append(method)
             if line[:2] == "IL":   # Si la ligne contient une instruction, on la stocke dans un noeud
                 self.add_node(Node.Node(line, method))
 
@@ -34,7 +36,15 @@ class GFC:
             if temp is not None:
                 self.nodes[i].add_succs(self.find_node(NodeID.NodeID(self.nodes[i].get_method(), temp)))
 
-            # if self.nodes[i].get_instruction == "call" or "callvirt" or "newobj":
+            if (self.nodes[i].get_instruction() == "call"
+                or self.nodes[i].get_instruction() == "callvirt"
+                or self.nodes[i].get_instruction() == "newobj"):
+                called_method = Method.Method.label_to_method(self.nodes[i].get_label())
+                suc = self.find_node(NodeID.NodeID(called_method, 0))
+                if suc is not None:
+                    self.nodes[i].add_succs(suc)
+
+            # Reste à traiter l'instruction jmp
 
     def add_node(self, node):
         self.nodes.append(node)
