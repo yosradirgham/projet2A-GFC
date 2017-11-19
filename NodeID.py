@@ -4,6 +4,7 @@
 # Pour l'instant, un identifiant contient le nom de la méthode (la ligne venant juste après le .method), et le numéro
 # de ligne relatif (l'index) (dans le bytecode, le num de ligne ressemble à IL_0001, IL00b4 etc.)
 
+
 class NodeID:
 
     def __init__(self, method, index):
@@ -13,8 +14,8 @@ class NodeID:
     def __eq__(self, other):
         return self.method == other.method and self.index == other.index
 
-    def getMethod(self):
+    def get_method(self):
         return self.method
 
-    def getIndex(self):
+    def get_index(self):
         return self.index

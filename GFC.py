@@ -2,6 +2,7 @@
 
 import Node
 import NodeID
+import Method
 
 
 # Un graphe est tout simplement une liste de noeuds.
@@ -19,7 +20,7 @@ class GFC:
         while line != "":
             line = unindent(file.readline())
             if line[:7] == ".method":     # Si on rencontre une nouvelle méthode, on enregistre le nom qui se trouve
-                method = unindent(file.readline()[:-1])  # dans la ligne suivante
+                method = Method.Method.declaration_to_method(file.readline())  # dans la ligne suivante
             if line[:2] == "IL":   # Si la ligne contient une instruction, on la stocke dans un noeud
                 self.add_node(Node.Node(line, method))
 
@@ -49,16 +50,12 @@ class GFC:
         fichier = open(filename, "w")
         fichier.write("digraph GFC {\n")
         for node in self.nodes:
-            fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\""
+            fichier.write("\"" + node.ID.get_method().__str__() + str(node.ID.get_index()) + "\""
                           + "[label=\"" + node.label[0] + "\"];\n")
             for i in range(len(node.succs)):
-                fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\"" + " -> " + "\""
-                              + node.succs[i].ID.getMethod() + str(node.succs[i].ID.getIndex()) + "\"[label="
-                              + str(i) + "];\n")
-            # for suc in node.succs:
-            #     fichier.write("\"" + node.ID.getMethod() + str(node.ID.getIndex()) + "\""
-            #                   + " -> "
-            #                   + "\"" + suc.ID.getMethod() + str(suc.ID.getIndex()) + "\";\n")
+                fichier.write("\"" + node.ID.get_method().__str__() + str(node.ID.get_index()) + "\"" + " -> " + "\""
+                              + node.succs[i].ID.get_method().__str__() + str(node.succs[i].ID.get_index())
+                              + "\"[label=" + str(i) + "];\n")
         fichier.write("}\n")
 
 
