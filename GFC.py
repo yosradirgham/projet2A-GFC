@@ -3,6 +3,24 @@
 import Node
 import NodeID
 import Method
+import struct
+
+
+def instr_type(data):
+    opcode = data[0]
+    if 'call' in opcode:
+        return 2
+    elif 'br' in opcode:
+        return 8
+    elif 'ret' in opcode:
+        return 1
+    elif 'throw' in opcode:
+        return 5
+    elif 'newobj' in opcode:
+        return 2
+    else:
+        print(opcode)
+        return 9
 
 
 # Un graphe est tout simplement une liste de noeuds.
@@ -60,14 +78,32 @@ class GFC:
         fichier = open(filename, "w")
         fichier.write("digraph GFC {\n")
         for node in self.nodes:
-            fichier.write("\"" + node.ID.get_method().__str__() + str(node.ID.get_index()) + "\""
-                          + "[label=\"" + node.label[0] + "\"];\n")
+            fichier.write('"%s%s"[label="%s"];\n' %
+                          (node.ID.get_method(), node.ID.get_index(), node.label[0]))
             for i in range(len(node.succs)):
-                fichier.write("\"" + node.ID.get_method().__str__() + str(node.ID.get_index()) + "\"" + " -> " + "\""
-                              + node.succs[i].ID.get_method().__str__() + str(node.succs[i].ID.get_index())
-                              + "\"[label=" + str(i) + "];\n")
+                fichier.write('"%s%s" -> "%s%s"[label="%s"];\n' %
+                              (node.ID.get_method(), node.ID.get_index(),
+                               node.succs[i].ID.get_method(), node.succs[i].ID.get_index(), i))
         fichier.write("}\n")
 
+    def to_edg(self, filename):
+        fichier = open(filename, "wb")
+        fichier.write("GRAPHBIN")
+        fichier.write(struct.pack("I", len(self.nodes)))
+        cpt = 1
+        index = dict()
+        for node in self.nodes:
+            fichier.write("n")
+            fichier.write(struct.pack('Q', cpt))
+            fichier.write(struct.pack('I', instr_type(node.label)))
+            index[node] = cpt
+            cpt = cpt + 1
+        for node in self.nodes:
+            for elt in node.succs:
+                fichier.write("e")
+                fichier.write(struct.pack('Q', index[node]))
+                fichier.write(struct.pack('Q', index[elt]))
+        
 
 def unindent(my_string):
     if my_string != "":
@@ -84,7 +120,9 @@ def find_IL(label):
 
 
 g = GFC("test.cil")
+print(g)
 g.export("graphe.dot")
+# g.to_edg("graphe.edg")
 
 
 
