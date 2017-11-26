@@ -61,6 +61,8 @@ class GFC:
                 suc = self.find_node(NodeID.NodeID(called_method, 0))
                 if suc is not None:
                     self.nodes[i].add_succs(suc)
+                else:
+                    self.nodes[i].label[0] += " EXT"
 
             # Reste à traiter l'instruction jmp
 
@@ -103,7 +105,7 @@ class GFC:
                 fichier.write("e")
                 fichier.write(struct.pack('Q', index[node]))
                 fichier.write(struct.pack('Q', index[elt]))
-        
+
 
 def unindent(my_string):
     if my_string != "":

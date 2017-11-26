@@ -3,6 +3,7 @@
 import re
 
 
+# Une méthode est caractérisée par  un type de retour, par son nom et par les types des arguments qu'on lui passe.
 class Method:
 
     def __init__(self, return_type, name, arg_types):
