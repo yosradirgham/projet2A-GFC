@@ -3,7 +3,6 @@
 import re
 
 
-# Une méthode est caractérisée par  un type de retour, par son nom et par les types des arguments qu'on lui passe.
 class Method:
 
     def __init__(self, return_type, name, arg_types):
@@ -17,12 +16,7 @@ class Method:
                 and self.arg_types == other.arg_types)
 
     def __str__(self):
-        string = self.return_type + " " + self.name + "("
-        for arg in self.arg_types:
-            string += arg + ", "
-        string = string[:-2]
-        string += ")"
-        return string
+        return "%s %s ( %s )" % (self.return_type, self.name, ", ".join(self.arg_types))
 
     @classmethod
     def declaration_to_method(cls, string):

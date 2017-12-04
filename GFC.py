@@ -90,19 +90,19 @@ class GFC:
 
     def to_edg(self, filename):
         fichier = open(filename, "wb")
-        fichier.write("GRAPHBIN")
+        fichier.write(bytes("GRAPHBIN", encoding="ascii"))
         fichier.write(struct.pack("I", len(self.nodes)))
         cpt = 1
         index = dict()
         for node in self.nodes:
-            fichier.write("n")
+            fichier.write(bytes("n", encoding="ascii"))
             fichier.write(struct.pack('Q', cpt))
             fichier.write(struct.pack('I', instr_type(node.label)))
             index[node] = cpt
             cpt = cpt + 1
         for node in self.nodes:
             for elt in node.succs:
-                fichier.write("e")
+                fichier.write(bytes("e", encoding="ascii"))
                 fichier.write(struct.pack('Q', index[node]))
                 fichier.write(struct.pack('Q', index[elt]))
 
@@ -121,10 +121,10 @@ def find_IL(label):
     return None
 
 
-g = GFC("test.cil")
+g = GFC("exception.cil")
 print(g)
-g.export("graphe.dot")
-# g.to_edg("graphe.edg")
+# g.export("exception.dot")
+g.to_edg("graphe.edg")
 
 
 

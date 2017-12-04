@@ -17,6 +17,9 @@ class Node:
         self.label = re.split('\W+', cil_line)[1:]   # On extrait le nom de l'instruction et les arguments
         self.succs = []
 
+    def __hash__(self):
+        return hash((str(self.ID))) #, self.label))
+
     # Deux noeuds sont égaux ssi ils ont le même identifiant.
     def __eq__(self, other):
         return self.ID == other.ID
