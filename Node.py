@@ -13,7 +13,7 @@ class Node:
     # Il faut aussi passer en argument le numéro de la méthode correspondante pour construire correctement l'ID.
     def __init__(self, cil_line, method):
         index = int(cil_line[3:7], 16)  # On extrait le num de ligne écrit en base 16
-        self.ID = NodeID.NodeID(method, index)   # On construit l'ID avec l'index et le numéro de la méthode
+        self.ID = NodeID.NodeID(method, index)   # On construit l'ID avec la méthode et l'index relatif
         self.label = re.split('\W+', cil_line)[1:]   # On extrait le nom de l'instruction et les arguments
         self.succs = []
 

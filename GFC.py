@@ -8,24 +8,41 @@ import struct
 
 def instr_type(data):
     opcode = data[0]
-    if 'call' in opcode:
-        return 2
-    elif 'br' in opcode:
-        return 8
-    elif 'ret' in opcode:
+    # Cas préfixe
+    if ('tail.' in opcode or 'unaligned.' in opcode or 'no.' in opcode or 'volatile.' in opcode
+            or 'constrained.' in opcode or 'readonly.' in opcode):
+        opcode = data[1]
+    # Cas 1 : return
+    if 'ret' in opcode:
         return 1
-    elif 'throw' in opcode:
-        return 5
-    elif 'newobj' in opcode:
+    # Cas 2 : appel fonction
+    elif ('call' in opcode or 'newobj' in opcode) and ('localloc' not in opcode):
         return 2
+    # Cas 3 : saut inconditionnel
+    elif opcode == 'br' or opcode == 'br.s':
+        return 3
+    # Cas 4 : exception
+    # Les instructions qui lèvent de façon conditionnelle les exceptions sont-elles à prendre en compte ?
+    # Ex : opcode 0x82 à 0x8b et les autres instructions de conversion
+    elif 'throw' in opcode:
+        return 4
+    # Cas 5 : appel à une fonction d'une librairie inaccessible
+    elif 'EXT' in opcode:
+        return 5
+    # Cas 8 : saut conditionnel
+    elif (('br' in opcode and 'break' not in opcode)
+          or 'beq' in opcode or 'bge' in opcode or 'ble' in opcode or 'bgt' in opcode or 'blt' in opcode
+          or 'bne' in opcode):
+        return 8
+    # Cas 12 : switch
+    elif 'switch' in opcode:
+        return 12
     else:
-        print(opcode)
         return 9
 
 
 # Un graphe est tout simplement une liste de noeuds.
 class GFC:
-
     # Un constructeur pour construire un GFC à partir d'un fichier texte de CIL
     def __init__(self, file_name):
 
@@ -38,10 +55,10 @@ class GFC:
         line = "\n"
         while line != "":
             line = unindent(file.readline())
-            if line[:7] == ".method":     # Si on rencontre une nouvelle méthode, on enregistre le nom qui se trouve
+            if line[:7] == ".method":  # Si on rencontre une nouvelle méthode, on enregistre le nom qui se trouve
                 method = Method.Method.declaration_to_method(file.readline())  # dans la ligne suivante
                 self.methods.append(method)
-            if line[:2] == "IL":   # Si la ligne contient une instruction, on la stocke dans un noeud
+            if line[:2] == "IL":  # Si la ligne contient une instruction, on la stocke dans un noeud
                 self.add_node(Node.Node(line, method))
 
         # Construisons maintenant la liste des successeurs de chaque noeud
@@ -64,7 +81,7 @@ class GFC:
                 else:
                     self.nodes[i].label[0] += " EXT"
 
-            # Reste à traiter l'instruction jmp
+                    # Reste à traiter l'instruction jmp
 
     def add_node(self, node):
         self.nodes.append(node)
@@ -120,11 +137,6 @@ def find_IL(label):
             return int(word[3:7], 16)
     return None
 
-
-g = GFC("exception.cil")
-print(g)
+# g = GFC("exception.cil")
 # g.export("exception.dot")
-g.to_edg("graphe.edg")
-
-
-
+# g.to_edg("graphe.edg")
