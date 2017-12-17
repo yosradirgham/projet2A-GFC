@@ -13,25 +13,24 @@ def instr_type(data):
             or 'constrained.' in opcode or 'readonly.' in opcode):
         opcode = data[1]
     # Cas 1 : return
-    if 'ret' in opcode:
+    if 'ret' in opcode or 'endfault' in opcode or 'endfinally' in opcode or 'leave' in opcode:
         return 1
     # Cas 2 : appel fonction
     elif ('call' in opcode or 'newobj' in opcode) and ('localloc' not in opcode):
         return 2
     # Cas 3 : saut inconditionnel
-    elif opcode == 'br' or opcode == 'br.s':
+    elif opcode == 'br' or opcode == 'br.s' or opcode == 'jmp':
         return 3
     # Cas 4 : exception
     # Les instructions qui lèvent de façon conditionnelle les exceptions sont-elles à prendre en compte ?
     # Ex : opcode 0x82 à 0x8b et les autres instructions de conversion
-    elif 'throw' in opcode:
+    elif 'throw' in opcode or 'break' in opcode or 'conv.ovf' in opcode or 'ckfinite' in opcode:
         return 4
     # Cas 5 : appel à une fonction d'une librairie inaccessible
     elif 'EXT' in opcode:
         return 5
     # Cas 8 : saut conditionnel
-    elif (('br' in opcode and 'break' not in opcode)
-          or 'beq' in opcode or 'bge' in opcode or 'ble' in opcode or 'bgt' in opcode or 'blt' in opcode
+    elif ('br' in opcode or 'beq' in opcode or 'bge' in opcode or 'ble' in opcode or 'bgt' in opcode or 'blt' in opcode
           or 'bne' in opcode):
         return 8
     # Cas 12 : switch
@@ -64,7 +63,7 @@ class GFC:
         # Construisons maintenant la liste des successeurs de chaque noeud
         for i in range(len(self.nodes)):
 
-            if self.nodes[i].get_instruction() != "ret" and self.nodes[i].get_instruction() != "throw":
+            if instr_type(self.nodes[i].get_label()) != 1 and self.nodes[i].get_instruction() != "throw":
                 self.nodes[i].add_succs(self.nodes[i + 1])
 
             temp = find_IL(self.nodes[i].get_label())
@@ -93,12 +92,24 @@ class GFC:
                 return node
         return None
 
-    def export(self, filename):
+    def to_dot(self, filename):
         fichier = open(filename, "w")
         fichier.write("digraph GFC {\n")
         for node in self.nodes:
             fichier.write('"%s%s"[label="%s"];\n' %
                           (node.ID.get_method(), node.ID.get_index(), node.label[0]))
+            for i in range(len(node.succs)):
+                fichier.write('"%s%s" -> "%s%s"[label="%s"];\n' %
+                              (node.ID.get_method(), node.ID.get_index(),
+                               node.succs[i].ID.get_method(), node.succs[i].ID.get_index(), i))
+        fichier.write("}\n")
+
+    def instr_type_to_dot(self, filename):
+        fichier = open(filename, "w")
+        fichier.write("digraph GFC {\n")
+        for node in self.nodes:
+            fichier.write('"%s%s"[label="%s"];\n' %
+                          (node.ID.get_method(), node.ID.get_index(), str(instr_type(node.label))))
             for i in range(len(node.succs)):
                 fichier.write('"%s%s" -> "%s%s"[label="%s"];\n' %
                               (node.ID.get_method(), node.ID.get_index(),
@@ -137,6 +148,8 @@ def find_IL(label):
             return int(word[3:7], 16)
     return None
 
-# g = GFC("exception.cil")
-# g.export("exception.dot")
+
+g = GFC("test.cil")
+g.to_dot("test.dot")
+g.instr_type_to_dot("graphe_types.dot")
 # g.to_edg("graphe.edg")

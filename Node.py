@@ -31,7 +31,11 @@ class Node:
         return self.label
 
     def get_instruction(self):
-        return self.label[0]
+        if ('tail.' in self.label[0] or 'unaligned.' in self.label[0] or 'no.' in self.label[0]
+            or 'volatile.' in self.label[0] or 'constrained.' in self.label[0] or 'readonly.' in self.label[0]):
+            return self.label[1]
+        else:
+            return self.label[0]
 
     def get_ID(self):
         return self.ID
