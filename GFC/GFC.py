@@ -16,10 +16,10 @@ def instr_type(data):
     if 'ret' in opcode or 'endfault' in opcode or 'endfinally' in opcode or 'leave' in opcode:
         return 1
     # Cas 2 : appel fonction
-    elif ('call' in opcode or 'newobj' in opcode or 'jmp' in opcode) and ('localloc' not in opcode):
+    elif ('call' in opcode or 'newobj' in opcode) and ('localloc' not in opcode):
         return 2
     # Cas 3 : saut inconditionnel
-    elif opcode == 'br' or opcode == 'br.s':
+    elif opcode == 'br' or opcode == 'br.s' or 'jmp' in opcode:
         return 3
     # Cas 4 : exception
     # Les instructions qui lèvent de façon conditionnelle les exceptions sont-elles à prendre en compte ?
