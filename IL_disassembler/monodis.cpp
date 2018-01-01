@@ -1,3 +1,7 @@
+/*
+created by yosra 
+*/
+
 /*some valuable ressources:
 https://blog.kowalczyk.info/articles/pefileformat.html
 also check pe.txt file i'll join it to this one 
