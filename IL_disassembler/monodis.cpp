@@ -1,6 +1,4 @@
-/*
-created by yosra 
-*/
+
 
 /*some valuable ressources:
 https://blog.kowalczyk.info/articles/pefileformat.html
