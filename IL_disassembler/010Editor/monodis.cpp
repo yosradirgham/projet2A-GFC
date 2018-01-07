@@ -1,13 +1,11 @@
 
-
 /*some valuable ressources:
 https://blog.kowalczyk.info/articles/pefileformat.html
-also check pe.txt file i'll join it to this one 
+also check pe.txt file i'll join it to this one
 */
 
 #include<stdio.h>
 #include<stdlib.h>
-#include <iostream>
 #include <stdint.h>
 #include<time.h>
 #include <wchar.h>
@@ -141,10 +139,10 @@ typedef union {
 
 //----------------image file header-----------------------------------------------------
 typedef struct _IMAGE_FILE_HEADER {
-// Ce champ spécifie le type d'architecture utilisé pour faire fonctionner le binaire, sur un i386, sa valeur est à 0x014c (0x8664 sur AMD64).
+// Ce champ spÃ©cifie le type d'architecture utilisÃ© pour faire fonctionner le binaire, sur un i386, sa valeur est Ã  0x014c (0x8664 sur AMD64).
   WORD  Machine;
   WORD  NumberOfSections; // Nombre de Sections existante dans le programme.
-//Cette variable correspond à la date de modification du fichier. Elle contient une valeur en seconde de la date, équivalente au temps écoulé depuis le 1er Janvier 1970.
+//Cette variable correspond Ã  la date de modification du fichier. Elle contient une valeur en seconde de la date, Ã©quivalente au temps Ã©coulÃ© depuis le 1er Janvier 1970.
   DWORD TimeDateStamp;
   DWORD PointerToSymbolTable;
   DWORD NumberOfSymbols;
@@ -219,15 +217,15 @@ void readOptionalHeader64(IMAGE_OPTIONAL_HEADER64 OptionalHeader){//most signifi
 }
 
 int ophFunction(IMAGE_OPTIONAL_HEADER oph){
-        IMAGE_OPTIONAL_HEADER OPHeader;
         if(oph.opt64.Magic==0x010b){
               return 0;
          }
          else{
-             if(oph.opt64.Magic==0x020b){
-                   return 1;
-             }
+              return 1;
          }
+       /* if(oph.opt64.Magic==0x020b){
+              return 1;
+        }*/
 }
 
 char *map_to_memory(char *filename) {
@@ -252,7 +250,7 @@ char *map_to_memory(char *filename) {
 
 
 
-void read_from_exeFile_DosHeader(char* fileName){
+void read_from_exeFile(char* fileName){
 
        int i;
        PIMAGE_DOS_HEADER PDosHeader;//pointer to dos header
@@ -361,4 +359,18 @@ void read_from_exeFile_DosHeader(char* fileName){
                      if((PImageSectionHeader[i].Characteristics&0x80000000)==0x80000000)printf("Writable, ");
              }
      }
+}
+
+
+
+int main()
+{
+    FILE* file;
+    system("/home/yosra/Desktop/p2A/projet2A/cs_cil/exception.exe/home/yosra/Desktop/p2A/projet2A/cs_cil/exception.exe");
+    char* file_name="/home/yosra/Desktop/p2A/projet2A/cs_cil/exception.exe";
+    file=fopen(file_name,"r");
+    read_from_exeFile(file_name);
+    pclose(file);
+    printf("Hello world!\n");
+    return 0;
 }
