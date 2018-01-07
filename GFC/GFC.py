@@ -151,7 +151,7 @@ def find_IL(label):
 
 
 try:
-    file_name = sys.argv[1]
+    file_name = "Nmn du fichier contenant le cil"
     g = GFC(file_name)
     g.to_dot("test.dot")
     g.instr_type_to_dot("graphe_types.dot")
