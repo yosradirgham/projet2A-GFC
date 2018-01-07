@@ -4,6 +4,7 @@ import Node
 import NodeID
 import Method
 import struct
+import sys
 
 
 def instr_type(data):
@@ -63,7 +64,7 @@ class GFC:
         # Construisons maintenant la liste des successeurs de chaque noeud
         for i in range(len(self.nodes)):
 
-            if instr_type(self.nodes[i].get_label()) != 1 and 'throw' not in self.nodes[i].get_instruction():
+            if 'ret' not in self.nodes[i].get_instruction() and 'throw' not in self.nodes[i].get_instruction():
                 self.nodes[i].add_succs(self.nodes[i + 1])
 
             temp = find_IL(self.nodes[i].get_label())
@@ -149,7 +150,12 @@ def find_IL(label):
     return None
 
 
-g = GFC("test.cil")
-g.to_dot("test.dot")
-g.instr_type_to_dot("graphe_types.dot")
-# g.to_edg("graphe.edg")
+try:
+    file_name = sys.argv[1]
+    g = GFC(file_name)
+    g.to_dot("test.dot")
+    g.instr_type_to_dot("graphe_types.dot")
+    # g.to_edg("graphe.edg")
+except IndexError:
+    print("No file given!")
+
