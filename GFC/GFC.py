@@ -64,7 +64,7 @@ class GFC:
         # Construisons maintenant la liste des successeurs de chaque noeud
         for i in range(len(self.nodes)):
 
-            if 'ret' not in self.nodes[i].get_instruction() and 'throw' not in self.nodes[i].get_instruction():
+            if instr_type(self.nodes[i].get_label()) != 1 and 'throw' not in self.nodes[i].get_instruction():
                 self.nodes[i].add_succs(self.nodes[i + 1])
 
             temp = find_IL(self.nodes[i].get_label())
@@ -81,7 +81,7 @@ class GFC:
                 else:
                     self.nodes[i].label[0] += " EXT"
 
-                    # Reste à traiter l'instruction jmp
+        file.close()
 
     def add_node(self, node):
         self.nodes.append(node)
