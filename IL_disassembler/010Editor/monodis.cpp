@@ -1,13 +1,11 @@
 
-
 /*some valuable ressources:
 https://blog.kowalczyk.info/articles/pefileformat.html
-also check pe.txt file i'll join it to this one 
+also check pe.txt file i'll join it to this one
 */
 
 #include<stdio.h>
 #include<stdlib.h>
-#include <iostream>
 #include <stdint.h>
 #include<time.h>
 #include <wchar.h>
@@ -63,7 +61,7 @@ typedef struct _IMAGE_DATA_DIRECTORY {//Each data directory is basically a struc
 
 
 //---------------image otional header--------------------------------------------
-/*so we're gonna be using the IMAGE_XYZ32 and IMAGE_XYZ64 versions of the structures
+/*we're gonna be using the IMAGE_XYZ32 and IMAGE_XYZ64 versions of the structures
 instead of IMAGE_XYZ, to avoid defaulting to the architecture size of my own system */
 
 typedef struct _IMAGE_OPTIONAL_HEADER64 {
@@ -141,10 +139,10 @@ typedef union {
 
 //----------------image file header-----------------------------------------------------
 typedef struct _IMAGE_FILE_HEADER {
-// Ce champ spécifie le type d'architecture utilisé pour faire fonctionner le binaire, sur un i386, sa valeur est à 0x014c (0x8664 sur AMD64).
+// Ce champ spÃ©cifie le type d'architecture utilisÃ© pour faire fonctionner le binaire, sur un i386, sa valeur est Ã  0x014c (0x8664 sur AMD64).
   WORD  Machine;
   WORD  NumberOfSections; // Nombre de Sections existante dans le programme.
-//Cette variable correspond à la date de modification du fichier. Elle contient une valeur en seconde de la date, équivalente au temps écoulé depuis le 1er Janvier 1970.
+//Cette variable correspond Ã  la date de modification du fichier. Elle contient une valeur en seconde de la date, Ã©quivalente au temps Ã©coulÃ© depuis le 1er Janvier 1970.
   DWORD TimeDateStamp;
   DWORD PointerToSymbolTable;
   DWORD NumberOfSymbols;
@@ -181,7 +179,7 @@ typedef struct _IMAGE_SECTION_HEADER {
 //                                         functions
 //-----------------------------------------------------------------------------------------------------
 void readOptionalHeader32(IMAGE_OPTIONAL_HEADER32 OptionalHeader){//most significant infos in the optional header
-         printf("Given file is a : PE32");
+         printf("Given file is a : PE32\n");
          printf("Major Linker Version :\t%d\n ",OptionalHeader.MajorLinkerVersion);
          printf("Minor Linker Version :\t%d\n ",OptionalHeader.MinorLinkerVersion);
          printf("size of code segment(.text):\t%d\n",OptionalHeader.SizeOfCode);
@@ -201,7 +199,7 @@ void readOptionalHeader32(IMAGE_OPTIONAL_HEADER32 OptionalHeader){//most signifi
 }
 
 void readOptionalHeader64(IMAGE_OPTIONAL_HEADER64 OptionalHeader){//most significant infos in the optional header
-         printf("Given file is a : PE32+(64)");
+         printf("Given file is a : PE32+(64)\n");
          printf("Major Linker Version :\t%d\n ",OptionalHeader.MajorLinkerVersion);
          printf("Minor Linker Version :\t%d\n ",OptionalHeader.MinorLinkerVersion);
          printf("size of code segment(.text):\t%d\n",OptionalHeader.SizeOfCode);
@@ -210,24 +208,25 @@ void readOptionalHeader64(IMAGE_OPTIONAL_HEADER64 OptionalHeader){//most signifi
          printf("Base address of code segment(RVA):\t%#x\n",OptionalHeader.BaseOfCode);
          printf("Section Alignment:\t%#x\n",OptionalHeader.SectionAlignment);
          switch(OptionalHeader.Subsystem){
-            case(1):printf("SubSystem type:\tDevice Driver(Native windows Process)");break;
-            case(2):printf("SubSystem type:\tWindows GUI");break;
-            case(3):printf("SubSystem type:\tWindows CLI");break;
-            case(9):printf("SubSystem type:\tWindows CE GUI");break;
-            default:printf("Unknown");break;
+            case(1):printf("SubSystem type:\tDevice Driver(Native windows Process)\n");break;
+            case(2):printf("SubSystem type:\tWindows GUI\n");break;
+            case(3):printf("SubSystem type:\tWindows CLI\n");break;
+            case(9):printf("SubSystem type:\tWindows CE GUI\n");break;
+            default:printf("SubSystem type:\tUnknown\n");break;
          }
+
 }
 
 int ophFunction(IMAGE_OPTIONAL_HEADER oph){
-        IMAGE_OPTIONAL_HEADER OPHeader;
         if(oph.opt64.Magic==0x010b){
               return 0;
          }
          else{
-             if(oph.opt64.Magic==0x020b){
-                   return 1;
-             }
+              return 1;
          }
+       /* if(oph.opt64.Magic==0x020b){
+              return 1;
+        }*/
 }
 
 char *map_to_memory(char *filename) {
@@ -252,7 +251,7 @@ char *map_to_memory(char *filename) {
 
 
 
-void read_from_exeFile_DosHeader(char* fileName){
+void read_from_exeFile(char* fileName){
 
        int i;
        PIMAGE_DOS_HEADER PDosHeader;//pointer to dos header
@@ -275,6 +274,21 @@ void read_from_exeFile_DosHeader(char* fileName){
        }
        else{
              printf("Magic number:\t MZ(%#x)\n",PDosHeader->e_magic);
+             printf("Bytes on last page of file :%#x\n",PDosHeader->e_cblp);
+             printf("Pages in file :%#x\n ",PDosHeader->e_cp);
+             printf("Relocation : %#x\n",PDosHeader->e_crlc);
+             printf("Size of header in paragraphs :%#x \n",PDosHeader->e_cparhdr);
+             printf("Minimum extra paragraphs needed :%#x\n ",PDosHeader->e_minalloc);
+             printf("Maximum extra paragraphs needed : %#x\n",PDosHeader->e_maxalloc);
+             printf("Initial (relative) SS value : %#x\n",PDosHeader->e_ss);
+             printf("Initial SP value :%#x \n",PDosHeader->e_sp);
+             printf("Checksum :%#x \n",PDosHeader->e_csum);
+             printf("Initial IP value :%#x\n ",PDosHeader->e_ip);
+             printf("Initial (relative) CS value :%#x\n ",PDosHeader->e_cs);
+             printf("File address of relocation table :%#x\n ",PDosHeader->e_lfarlc);
+             printf("Overlay number : %#x\n",PDosHeader->e_ovno);
+             printf("OEM identifier : %#x\n",PDosHeader->e_oemid);
+             printf("OEM information(e_oemid specific) :%#x\n",PDosHeader->e_oeminfo);
              printf("Address of PE header:\t %#xh\n",PDosHeader->e_lfanew);
        }
 
@@ -296,15 +310,15 @@ void read_from_exeFile_DosHeader(char* fileName){
              //machine:
              printf("Machine architecture:\t");
              switch(imageFileHeader.Machine){
-                 case 0x0:    printf("All "); break;
-                 case 0x14d:  printf("Intel i860"); break;
-                 case 0x14c:  printf("Intel i386,i486,i586"); break;
-                 case 0x200:  printf("Intel Itanium processor"); break;
-                 case 0x8664: printf("AMD x64"); break;
-                 case 0x162:  printf("MIPS R3000"); break;
-                 case 0x166:  printf("MIPS R4000"); break;
-                 case 0x183:  printf("DEC Alpha AXP"); break;
-                 default   :  printf("Not Found"); break;
+                 case 0x0:    printf("All \n"); break;
+                 case 0x14d:  printf("Intel i860\n"); break;
+                 case 0x14c:  printf("Intel i386,i486,i586\n"); break;
+                 case 0x200:  printf("Intel Itanium processor\n"); break;
+                 case 0x8664: printf("AMD x64\n"); break;
+                 case 0x162:  printf("MIPS R3000\n"); break;
+                 case 0x166:  printf("MIPS R4000\n"); break;
+                 case 0x183:  printf("DEC Alpha AXP\n"); break;
+                 default   :  printf("Not Found\n"); break;
              }
 
              //Number of sections:
@@ -331,6 +345,7 @@ void read_from_exeFile_DosHeader(char* fileName){
              oph=PImageNtHeader->OptionalHeader;
              if(ophFunction(oph)==0){
                   readOptionalHeader64(oph.opt64);
+
              }
              else{
                   readOptionalHeader32(oph.opt32);
@@ -338,20 +353,19 @@ void read_from_exeFile_DosHeader(char* fileName){
 
              /*-------------------------Sections' headers--------------------------------*/
              //get header of first section:
-             PImageSectionHeader=(PIMAGE_SECTION_HEADER)(PImageNtHeader +sizeof(PIMAGE_NT_HEADERS));
-
-             for(i = 0 ; i < imageFileHeader.NumberOfSections ; ++i){
-                     printf("Section Header name:\t%s\n ", PImageSectionHeader[i].Name);
-                     printf("ActualSize of code or data:\t%x\n ", PImageSectionHeader[i].Misc.VirtualSize);
-                     printf("Virtual Address(RVA):\t%x\n", PImageSectionHeader[i].VirtualAddress);
-                     printf("Size of raw data (rounded to FA):\t%x\n ", PImageSectionHeader[i].SizeOfRawData);
-                     printf("Pointer to Raw Data:\t%x\n ", PImageSectionHeader[i].PointerToRawData);
-                     printf("Pointer to Relocations:\t%x\n ", PImageSectionHeader[i].PointerToRelocations);
-                     printf("Pointer to Line numbers:\t%x\n ", PImageSectionHeader[i].PointerToLinenumbers);
-                     printf("Number of relocations:\t%x\n ", PImageSectionHeader[i].NumberOfRelocations);
-                     printf("Number of line numbers:\t%x\n ", PImageSectionHeader[i].NumberOfLinenumbers);
-                     printf("Characteristics:\t%s\n ","Contains ");
-                     if((PImageSectionHeader[i].Characteristics&0x20)==0x20)printf("executable code, ");
+              PImageSectionHeader = (PIMAGE_SECTION_HEADER)((PBYTE)&PImageNtHeader->OptionalHeader +PImageNtHeader->FileHeader.SizeOfOptionalHeader );
+              for(i = 0 ; i < imageFileHeader.NumberOfSections ; ++i){
+                     printf("\nSection Header name:\t%s\n ", PImageSectionHeader[i].Name);
+                     printf("ActualSize of code or data:\t%#x\n ", PImageSectionHeader[i].Misc.VirtualSize);
+                     printf("Virtual Address(RVA):\t%#x\n", PImageSectionHeader[i].VirtualAddress);
+                     printf("Size of raw data (rounded to FA):\t%#x\n ", PImageSectionHeader[i].SizeOfRawData);
+                     printf("Pointer to Raw Data:\t%#x\n ", PImageSectionHeader[i].PointerToRawData);
+                     printf("Pointer to Relocations:\t%#x\n ", PImageSectionHeader[i].PointerToRelocations);
+                     printf("Pointer to Line numbers:\t%#x\n ", PImageSectionHeader[i].PointerToLinenumbers);
+                     printf("Number of relocations:\t%#x\n ", PImageSectionHeader[i].NumberOfRelocations);
+                     printf("Number of line numbers:\t%#x\n ", PImageSectionHeader[i].NumberOfLinenumbers);
+                     printf("Characteristics:\t");
+                     if((PImageSectionHeader[i].Characteristics&0x20)==0x20)printf("executable code,");
                      if((PImageSectionHeader[i].Characteristics&0x40)==0x40)printf("initialized data, ");
                      if((PImageSectionHeader[i].Characteristics&0x80)==0x80)printf("uninitialized data, ");
                      if((PImageSectionHeader[i].Characteristics&0x80)==0x80)printf("uninitialized data, ");
@@ -361,4 +375,17 @@ void read_from_exeFile_DosHeader(char* fileName){
                      if((PImageSectionHeader[i].Characteristics&0x80000000)==0x80000000)printf("Writable, ");
              }
      }
+}
+
+
+
+int main()
+{
+    FILE* file;
+    system("/home/yosra/Desktop/p2A/projet2A/cs_cil/exception.exe");
+    char* file_name="/home/yosra/Desktop/p2A/projet2A/cs_cil/exception.exe";
+    file=fopen(file_name,"r");
+    read_from_exeFile(file_name);
+    pclose(file);
+    return 0;
 }
